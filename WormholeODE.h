@@ -203,8 +203,8 @@ std::pair<double, double> equatorial_phi_mapping(double phi, double r, double wh
 	double B_sqr = l_c * l_c * (n_phi * n_phi);
 
 	auto [phi_traced, l] = trace_wormhole_geodesic_2d(
-		0.01,
-		10000,
+		0.01,	// step size
+		10000,	// total steps
 		wh_length, // length
 		wh_mass, // mass
 		wh_radius, // radius
