@@ -1,7 +1,5 @@
 
 # Wormhole Raytracer
-Final project of computer graphics course
-
 Implementation of paper [Visualizing Interstellar's Wormhole](https://arxiv.org/pdf/1502.03809.pdf)
 
 # Some tricks
