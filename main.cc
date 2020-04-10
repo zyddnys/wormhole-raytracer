@@ -15,7 +15,7 @@
 
 #include "AESRNG.h"
 
-std::uint32_t constexpr SAMPLE_PER_PIXEL = 4;
+std::uint32_t constexpr SAMPLE_PER_PIXEL = 1;
 std::uint32_t constexpr IMAGE_WIDTH = 1920;
 std::uint32_t constexpr IMAGE_HEIGHT = 1080;
 
@@ -70,7 +70,7 @@ int main()
 	skymap2.Load(L"skybox_star.png");
 
 	Math::Camera cam;
-	cam.LookAt(4, 4, 0, 0, 0, 0);
+	cam.LookAt(-3, -8, 1, 0, 0.8, 0);
 	cam.SetAspectFOV(65, IMAGE_WIDTH, IMAGE_HEIGHT);
 
 	Texture bmp(IMAGE_WIDTH, IMAGE_HEIGHT);
@@ -115,7 +115,7 @@ int main()
 				Matrix4x4VectorMulVec(ray_dir, global_frame_to_camera_frame, ray_dir_camera_frame);
 				double ray_phi_camera = std::atan2(ray_dir_camera_frame.y, ray_dir_camera_frame.x);
 
-				auto [traced_ray_phi, traced_ray_l] = equatorial_phi_mapping(ray_phi_camera, Math::Vector4Length(ray_origin), 0, 0.1, 0.7);
+				auto [traced_ray_phi, traced_ray_l] = equatorial_phi_mapping(ray_phi_camera, Math::Vector4Length(ray_origin), 0, 0.02, 0.2);
 				//traced_ray_phi= ray_phi_camera
 
 				double local_x = -std::cos(traced_ray_phi);

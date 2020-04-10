@@ -62,3 +62,4 @@ TNumber runge_kutta_4_step(double x, TNumber y, double h, TFunc func, Args &&...
 }
 
 double const g_pi = std::acos(-1.);
+double const g_2pi = 2 * std::acos(-1.);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vec.h"
+#include "FPMap.h"
 
 vec5d geodesic_odes(
 	double t,			// step t
@@ -27,7 +28,7 @@ vec5d geodesic_odes(
 	// r (5)
 	double const r(rho + outside_wormhole * (M * (x * std::atan(x) - 0.5 * std::log(1.0 + x * x))));
 	// dr/dl
-	double const dl_dr(outside_wormhole * (std::atan(x) * 2.0 * l / (g_pi * std::abs(l))));
+	double const dr_dl(outside_wormhole * (std::atan(x) * 2.0 * l / (g_pi * std::abs(l))));
 
 	// dl/dt (A.7a)
 	double const dl_dt(pl);
@@ -36,7 +37,7 @@ vec5d geodesic_odes(
 	// dφ/dt (A.7c)
 	double const dphi_dt(b / (r * r * sin_theta * sin_theta));
 	// dpl/dt (A.7d)
-	double const dpl_dt(B_sqr * dl_dr / (r * r * r));
+	double const dpl_dt(B_sqr * dr_dl / (r * r * r));
 	// dpθ/dt (A.7e)
 	double const dptheta_dt(b_sqr * cos_theta / (sin_theta * sin_theta * sin_theta * r * r));
 
@@ -65,14 +66,14 @@ vec3d geodesic_odes_2d(
 	// r (5)
 	double const r(rho + outside_wormhole * (M * (x * std::atan(x) - 0.5 * std::log(1.0 + x * x))));
 	// dr/dl
-	double const dl_dr(outside_wormhole * (std::atan(x) * 2.0 * l / (g_pi * std::abs(l))));
+	double const dr_dl(outside_wormhole * (std::atan(x) * 2.0 * l / (g_pi * std::abs(l))));
 
 	// dl/dt (A.7a)
 	double const dl_dt(pl);
 	// dφ/dt (A.7c)
 	double const dphi_dt(b / (r * r));
 	// dpl/dt (A.7d)
-	double const dpl_dt(B_sqr * dl_dr / (r * r * r));
+	double const dpl_dt(B_sqr * dr_dl / (r * r * r));
 
 	return vec3d{ dl_dt, dphi_dt, dpl_dt };
 }
@@ -189,8 +190,15 @@ std::tuple<double, double, double, double> trace(Math::Vector4 const &ray_origin
 	return { local_x,local_y,local_z,l };
 }
 
+FPMap<std::pair<double, double>> g_phi_cache(65536);
+
 std::pair<double, double> equatorial_phi_mapping(double phi, double r, double wh_length, double wh_mass, double wh_radius)
 {
+	phi = std::fmod(phi, g_2pi);
+	auto cached_result(g_phi_cache.Get(phi / g_2pi));
+	if (cached_result)
+		return cached_result.value();
+
 	double l_c = r;
 
 	double n_l = -std::cos(phi);
@@ -214,6 +222,10 @@ std::pair<double, double> equatorial_phi_mapping(double phi, double r, double wh
 		0,
 		p_l
 	);
+
+	phi_traced = std::fmod(phi_traced, 2.0 * g_pi);
+
+	g_phi_cache.Put(phi / g_2pi, { phi_traced, l });
 
 	return { phi_traced, l }; // phi, l
 }
