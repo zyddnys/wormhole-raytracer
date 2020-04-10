@@ -10,6 +10,7 @@
 #include "vec.h"
 #include "Texture.h"
 #include "TextureCube.h"
+#include "TexturePanoramic.h"
 #include "Camera.h"
 #include "WormholeODE.h"
 
@@ -63,15 +64,16 @@ int main()
 
 	COMScope com_s;
 
-	TextureCube skymap1;
-	skymap1.Load(L"skybox_earth.png");
+	TexturePanoramic skymap1;
+	skymap1.Load(L"InterstellarWormhole_Fig10.jpg");
 
-	TextureCube skymap2;
-	skymap2.Load(L"skybox_star.png");
+	TexturePanoramic skymap2;
+	skymap2.Load(L"InterstellarWormhole_Fig6a.jpg");
+
 
 	Math::Camera cam;
-	cam.LookAt(-3, -8, 1, 0, 0.8, 0);
-	cam.SetAspectFOV(65, IMAGE_WIDTH, IMAGE_HEIGHT);
+	cam.LookAt(1, -1, 0, -1, 0, 0);
+	cam.SetAspectFOV(100, IMAGE_WIDTH, IMAGE_HEIGHT);
 
 	Texture bmp(IMAGE_WIDTH, IMAGE_HEIGHT);
 	Texture dir(IMAGE_WIDTH, IMAGE_HEIGHT);
@@ -81,7 +83,7 @@ int main()
 
 	double const wUnit = 2.0 / bmp.width, hUnit = 2.0 / bmp.height;
 
-#pragma omp parallel for schedule(dynamic, 1) private(row)
+//#pragma omp parallel for schedule(dynamic, 1) private(row)
 	for (row = 0; row < bmp.height; ++row)
 	{
 		Utils::StandardRNG rng;
@@ -115,8 +117,7 @@ int main()
 				Matrix4x4VectorMulVec(ray_dir, global_frame_to_camera_frame, ray_dir_camera_frame);
 				double ray_phi_camera = std::atan2(ray_dir_camera_frame.y, ray_dir_camera_frame.x);
 
-				auto [traced_ray_phi, traced_ray_l] = equatorial_phi_mapping(ray_phi_camera, Math::Vector4Length(ray_origin), 0, 0.02, 0.2);
-				//traced_ray_phi= ray_phi_camera
+				auto [traced_ray_phi, traced_ray_l] = equatorial_phi_mapping(ray_phi_camera, Math::Vector4Length(ray_origin), 0, 0.1, 0.7);
 
 				double local_x = -std::cos(traced_ray_phi);
 				double local_y = -std::sin(traced_ray_phi);
@@ -127,6 +128,7 @@ int main()
 
 					Vector4 traced_ray_dir;
 					Matrix4x4VectorMulVec(traced_ray_dir_camera, camera_frame_to_global_frame, traced_ray_dir); // to global frame
+					//traced_ray_dir = ray_dir;
 
 					finalVal = finalVal + skymap1.Sample(traced_ray_dir.x, traced_ray_dir.y, traced_ray_dir.z); // local sky
 					dir(row, col) = float32x4(traced_ray_dir.x, traced_ray_dir.y, traced_ray_dir.z);
@@ -137,6 +139,7 @@ int main()
 
 					Vector4 traced_ray_dir;
 					Matrix4x4VectorMulVec(traced_ray_dir_camera, camera_frame_to_global_frame, traced_ray_dir); // to global frame
+					//traced_ray_dir = ray_dir;
 
 					finalVal = finalVal + skymap2.Sample(traced_ray_dir.x, traced_ray_dir.y, traced_ray_dir.z); // local sky
 					dir(row, col) = float32x4(traced_ray_dir.x, traced_ray_dir.y, traced_ray_dir.z);

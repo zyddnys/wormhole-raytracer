@@ -155,6 +155,7 @@
     <ClInclude Include="Matrix4x4.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureCube.h" />
+    <ClInclude Include="TexturePanoramic.h" />
     <ClInclude Include="vec.h" />
     <ClInclude Include="float32x4.h" />
     <ClInclude Include="Vector4.h" />

@@ -16,10 +16,10 @@ inline T constexpr clamp(T a, T min_v, T max_v)
 	return std::max(std::min(a, max_v), min_v);
 }
 
-inline float constexpr saturate(float a)
-{
-	return std::max(std::min(a, 1.0f), 0.0f);
-}
+//inline float constexpr saturate(float a)
+//{
+//	return std::max(std::min(a, 1.0f), 0.0f);
+//}
 
 inline double constexpr saturate(double a)
 {

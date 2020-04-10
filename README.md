@@ -12,3 +12,5 @@ Implementation of paper [Visualizing Interstellar's Wormhole](https://arxiv.org/
 
 # Images
 ![](result.png)
+![](result.bmp)
+![](result2.bmp)
